@@ -1,8 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
-
 kind: Application
 metadata:
-  name: "${DEV_CLUSTER_NAME}"
+  name: dev-cluster
   namespace: argocd
 spec:
   project: default
@@ -12,16 +11,16 @@ spec:
   source:
     repoURL: 'https://mboersma.github.io/cluster-api-charts'
     chart: azure-aks-aso
-    targetRevision: v${CHART_REVISION}
+    targetRevision: v0.4.3
     helm:
       valuesObject:
-        clusterName: "${DEV_CLUSTER_NAME}"
-        location: "${DEV_CLUSTER_LOCATION}"
-        subscriptionID: "${AZURE_SUBSCRIPTION_ID}"
-        clientID: "${AZURE_CLIENT_ID}"
-        tenantID: "${AZURE_TENANT_ID}"
+        clusterName: "dev-cluster"
+        location: "eastus"
+        subscriptionID: "2e6391a4-78b1-4dd5-a9f2-cae44e09c3b8"
+        clientID: "302d53cb-bec8-4a10-826f-26e216342745"
+        tenantID: "374de4fa-c37d-4fd0-b893-c8bcbca446b9"
         authMode: "workloadidentity"
-        kubernetesVersion: v${KUBERNETES_VERSION}
+        kubernetesVersion: v1.32.7
         clusterNetwork: "overlay"
         withClusterClass: true
         withClusterTopology: true
