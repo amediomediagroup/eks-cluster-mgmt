@@ -50,3 +50,5 @@ kro-eks-rgs:
   enabled: true
 multi-acct:
   enabled: true
+envoy_gateway:
+  enabled: true
