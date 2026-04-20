@@ -461,12 +461,12 @@ multi-acct:
 envoy-gateway:
   enabled: false
   annotationsAppSet:
-    argocd.argoproj.io/sync-wave: "1" # Needs to be after KRO RGD  
+    argocd.argoproj.io/sync-wave: "0" # Needs to be after KRO RGD  
   namespace: envoy-gateway-system
   chartName: envoy-gateway
-  defaultVersion: "v1.7.2"
-  chartNamespace: gateway-helm
-  chartRepository: docker.io/envoyproxy
+  defaultVersion: "1.7.2"
+  chartNamespace: envoyproxy/gateway-helm
+  chartRepository: docker.io
   selector:
     matchExpressions:
       - key: enable_envoy_gateway
