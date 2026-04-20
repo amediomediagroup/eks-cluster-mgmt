@@ -461,7 +461,7 @@ multi-acct:
 envoy-gateway:
   enabled: false
   annotationsAppSet:
-    argocd.argoproj.io/sync-wave: "0" # Needs to be after KRO RGD  
+    argocd.argoproj.io/sync-wave: "-5" # Needs to be after KRO RGD  
   namespace: envoy-gateway-system
   chartName: envoy-gateway
   defaultVersion: "1.7.2"
