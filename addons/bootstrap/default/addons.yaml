@@ -463,9 +463,9 @@ envoy-gateway:
   annotationsAppSet:
     argocd.argoproj.io/sync-wave: "-5" # Needs to be after KRO RGD  
   namespace: envoy-gateway-system
-  chartName: envoy-gateway
+  chartName: gateway-helm
   defaultVersion: "1.7.2"
-  chartNamespace: envoyproxy/gateway-helm
+  chartNamespace: envoyproxy
   chartRepository: docker.io
   selector:
     matchExpressions:
