@@ -473,3 +473,139 @@ envoy-gateway:
         operator: In
         values: ['true']
   
+ingress-class-alb:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "0"
+  defaultVersion: "0.1.0"
+  path: charts/ingress-class-alb
+  selector:
+    matchExpressions:
+      - key: enable_ingress_class_alb
+        operator: In
+        values: ['true']
+
+argo-rollouts:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "3"
+  namespace: argo-rollouts
+  chartName: argo-rollouts
+  chartRepository: https://argoproj.github.io/argo-helm
+  defaultVersion: "2.39.5"
+  selector:
+    matchExpressions:
+      - key: enable_argo_rollouts
+        operator: In
+        values: ['true']
+
+ingress-nginx:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "3"
+  namespace: ingress-nginx
+  chartName: ingress-nginx
+  chartRepository: https://kubernetes.github.io/ingress-nginx
+  defaultVersion: "4.12.2"
+  selector:
+    matchExpressions:
+      - key: enable_ingress_nginx
+        operator: In
+        values: ['true']
+  valuesObject:
+    controller:
+      service:
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-security-groups: '{{.metadata.annotations.ingress_security_groups}}'
+
+gitlab:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "4" # Needs to be after External and Ingress Nginx
+  namespace: gitlab
+  defaultVersion: "0.1.0"
+  path: charts/gitlab
+  selector:
+    matchExpressions:
+      - key: enable_gitlab
+        operator: In
+        values: ['true']
+  valuesObject:
+    domain_name: '{{.metadata.annotations.gitlab_domain_name}}'
+    initial_root_password: '{{.metadata.annotations.ide_password}}'
+    security_groups: '{{.metadata.annotations.gitlab_security_groups}}'
+    git_username: '{{.metadata.annotations.git_username}}'
+    working_repo: '{{.metadata.annotations.working_repo}}'
+
+keycloak:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "5" # Needs to be after External Secrets, Ingress Nginx and Gitlab
+  namespace: keycloak
+  defaultVersion: "0.1.0"
+  path: charts/keycloak
+  selector:
+    matchExpressions:
+      - key: enable_keycloak
+        operator: In
+        values: ['true']
+  valuesObject:
+    ingress_domain_name: '{{.metadata.annotations.ingress_domain_name}}'
+
+argo-workflows:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "10" # Needs to be after Keycloak
+  namespace: argo
+  defaultVersion: "0.1.0"
+  path: charts/argo-workflows
+  selector:
+    matchExpressions:
+      - key: enable_argo_workflows
+        operator: In
+        values: ['true']
+  valuesObject:
+    ingress_domain_name: '{{.metadata.annotations.ingress_domain_name}}'
+
+kargo:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "10" # Needs to be after Keycloak
+  namespace: kargo
+  chartName: kargo
+  chartRepository: ghcr.io/akuity/kargo-charts
+  defaultVersion: "1.5.3"
+  selector:
+    matchExpressions:
+      - key: enable_kargo
+        operator: In
+        values: ['true']
+  valuesObject:
+    api:
+      host: '{{.metadata.annotations.ingress_domain_name}}'
+      argocd:
+        urls:
+        - https://{{.metadata.annotations.ingress_domain_name}}/argocd
+      oidc:
+        issuerURL: https://{{.metadata.annotations.ingress_domain_name}}/keycloak/realms/platform
+      adminAccount:
+        # $IDE_PASSWORD
+        passwordHash: '{{.metadata.annotations.ide_password_hash}}'
+        tokenSigningKey: '{{.metadata.annotations.ide_password_key}}'
+
+backstage:
+  enabled: false
+  annotationsAppSet:
+    argocd.argoproj.io/sync-wave: "20" # Needs to be after all addons
+  namespace: backstage
+  defaultVersion: "0.1.0"
+  path: charts/backstage
+  selector:
+    matchExpressions:
+      - key: enable_backstage
+        operator: In
+        values: ['true']
+  valuesObject:
+    gitlab_domain_name: '{{.metadata.annotations.gitlab_domain_name}}'
+    ingress_domain_name: '{{.metadata.annotations.ingress_domain_name}}'
+    backstage_image: '{{.metadata.annotations.backstage_image}}'
